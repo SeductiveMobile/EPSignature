@@ -22,7 +22,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OAr-kk-HpY" customClass="EPSignatureView" customModule="EPSignature" customModuleProvider="target">
-                    <rect key="frame" x="20" y="110" width="565" height="214"/>
+                    <rect key="frame" x="20" y="110" width="565" height="234"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="X" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MkH-Jy-I8l">
@@ -80,7 +80,7 @@
             <constraints>
                 <constraint firstItem="Yrj-8B-7oQ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="5PA-ug-Sg6"/>
                 <constraint firstAttribute="trailing" secondItem="axD-zL-F02" secondAttribute="trailing" constant="15" id="AMy-WN-q45"/>
-                <constraint firstItem="J7f-zy-tMu" firstAttribute="top" secondItem="OAr-kk-HpY" secondAttribute="bottom" constant="20" id="EWo-jj-aYc"/>
+                <constraint firstItem="J7f-zy-tMu" firstAttribute="top" secondItem="OAr-kk-HpY" secondAttribute="bottom" id="EWo-jj-aYc"/>
                 <constraint firstItem="aik-5V-tSc" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" constant="-1" id="GlS-Yf-S40"/>
                 <constraint firstAttribute="trailing" secondItem="rdS-ZH-7LX" secondAttribute="trailing" constant="20" id="JOv-bb-Yrx"/>
                 <constraint firstItem="Yrj-8B-7oQ" firstAttribute="top" secondItem="MkH-Jy-I8l" secondAttribute="bottom" constant="3" id="K58-Xq-qgO"/>
