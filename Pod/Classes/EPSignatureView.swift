@@ -30,6 +30,10 @@ public class EPSignatureView: UIView {
         super.init(coder: aDecoder)
         bezierPath.lineWidth = strokeWidth
         addLongPressGesture()
+        self.layer.borderWidth = 2
+        self.layer.borderColor = UIColor.lightGrayColor().CGColor
+        self.layer.masksToBounds = true
+        self.layer.cornerRadius = 14
         minPoint = CGPointMake(self.frame.size.width,self.frame.size.height)
     }
     
