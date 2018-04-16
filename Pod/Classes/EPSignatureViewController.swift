@@ -10,8 +10,8 @@ import UIKit
 
     // MARK: - EPSignatureDelegate
 @objc public protocol EPSignatureDelegate {
-    optional    func epSignature(_: EPSignatureViewController, didCancel error : NSError)
-    optional    func epSignature(_: EPSignatureViewController, didSigned signatureImage : UIImage, boundingRect: CGRect)
+    @objc optional    func epSignature(_: EPSignatureViewController, didCancel error : NSError)
+    @objc optional    func epSignature(_: EPSignatureViewController, didSigned signatureImage : UIImage, boundingRect: CGRect)
 }
 
 public class EPSignatureViewController: UIViewController {
@@ -39,32 +39,33 @@ public class EPSignatureViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Cancel, target: self, action: "onTouchCancelButton")
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(EPSignatureViewController.onTouchCancelButton))
         cancelButton.tintColor = tintColor
         self.navigationItem.leftBarButtonItem = cancelButton
         
-        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Done, target: self, action: "onTouchDoneButton")
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(EPSignatureViewController.onTouchDoneButton))
         doneButton.tintColor = tintColor
-        let clearButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Trash, target: self, action: "onTouchClearButton")
+        let clearButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.trash, target: self, action: #selector(EPSignatureViewController.onTouchClearButton))
         clearButton.tintColor = tintColor
         
         if showsDate {
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.dateFormat = "DD MMMM YYYY"
-            lblDate.text = dateFormatter.stringFromDate(NSDate())
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle  = DateFormatter.Style.short
+            dateFormatter.timeStyle  = DateFormatter.Style.none
+            lblDate.text = dateFormatter.string(from: Date())
         } else {
-            lblDate.hidden = false
+            lblDate.isHidden = true
         }
         
         if showsSaveSignatureOption {
-            let actionButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Action, target:   self, action: "onTouchActionButton:")
+            let actionButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.action, target:   self, action: #selector(EPSignatureViewController.onTouchActionButton(_:)))
             actionButton.tintColor = tintColor
             self.navigationItem.rightBarButtonItems = [doneButton, clearButton, actionButton]
             switchSaveSignature.onTintColor = tintColor
         } else {
             self.navigationItem.rightBarButtonItems = [doneButton, clearButton]
-            lblDefaultSignature.hidden = true
-            switchSaveSignature.hidden = true
+            lblDefaultSignature.isHidden = true
+            switchSaveSignature.isHidden = true
         }
         
         lblSignatureSubtitle.text = subtitleText
@@ -79,19 +80,21 @@ public class EPSignatureViewController: UIViewController {
     // MARK: - Initializers
     
     public convenience init(signatureDelegate: EPSignatureDelegate) {
-        self.init(signatureDelegate: signatureDelegate, showsDate: true, showsSaveSignatureOption: true)
+        self.init(signatureDelegate: signatureDelegate, showsDate: true, showsSaveSignatureOption: true, shouldShowBottomViews: true)
     }
     
     public convenience init(signatureDelegate: EPSignatureDelegate, showsDate: Bool) {
-        self.init(signatureDelegate: signatureDelegate, showsDate: showsDate, showsSaveSignatureOption: true)
+        self.init(signatureDelegate: signatureDelegate, showsDate: showsDate, showsSaveSignatureOption: true, shouldShowBottomViews: true)
     }
     
-    public init(signatureDelegate: EPSignatureDelegate, showsDate: Bool, showsSaveSignatureOption: Bool ) {
+    public init(signatureDelegate: EPSignatureDelegate, showsDate: Bool, showsSaveSignatureOption: Bool, shouldShowBottomViews: Bool) {
         self.showsDate = showsDate
         self.showsSaveSignatureOption = showsSaveSignatureOption
         self.signatureDelegate = signatureDelegate
-        let bundle = NSBundle(forClass: EPSignatureViewController.self)
+        let bundle = Bundle(for: EPSignatureViewController.self)
         super.init(nibName: "EPSignatureViewController", bundle: bundle)
+        lblX.isHidden = !shouldShowBottomViews
+        viewMargin.isHidden = !shouldShowBottomViews
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -100,48 +103,48 @@ public class EPSignatureViewController: UIViewController {
     
     // MARK: - Button Actions
     
-    func onTouchCancelButton() {
+    @objc func onTouchCancelButton() {
         signatureDelegate.epSignature!(self, didCancel: NSError(domain: "EPSignatureDomain", code: 1, userInfo: [NSLocalizedDescriptionKey:"User not signed"]))
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 
-    func onTouchDoneButton() {
+    @objc func onTouchDoneButton() {
         if let signature = signatureView.getSignatureAsImage() {
-            if switchSaveSignature.on {
-                let docPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
-                let filePath = (docPath! as NSString).stringByAppendingPathComponent("sig.data")
+            if switchSaveSignature.isOn {
+                let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
+                let filePath = (docPath! as NSString).appendingPathComponent("sig.data")
                 signatureView.saveSignature(filePath)
             }
             signatureDelegate.epSignature!(self, didSigned: signature, boundingRect: signatureView.getSignatureBoundsInCanvas())
-            dismissViewControllerAnimated(true, completion: nil)
+            dismiss(animated: true, completion: nil)
         } else {
             showAlert("You did not sign", andTitle: "Please draw your signature")
         }
     }
     
-    func onTouchActionButton(barButton: UIBarButtonItem) {
-        let action = UIAlertController(title: "Action", message: "", preferredStyle: UIAlertControllerStyle.ActionSheet)
+    @objc func onTouchActionButton(_ barButton: UIBarButtonItem) {
+        let action = UIAlertController(title: "Action", message: "", preferredStyle: UIAlertControllerStyle.actionSheet)
         action.view.tintColor = tintColor
         
-        action.addAction(UIAlertAction(title: "Load default signature", style: UIAlertActionStyle.Default, handler: { action in
-            let docPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
-            let filePath = (docPath! as NSString).stringByAppendingPathComponent("sig.data")
+        action.addAction(UIAlertAction(title: "Load default signature", style: UIAlertActionStyle.default, handler: { action in
+            let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
+            let filePath = (docPath! as NSString).appendingPathComponent("sig.data")
             self.signatureView.loadSignature(filePath)
         }))
-        
-        action.addAction(UIAlertAction(title: "Delete default signature", style: UIAlertActionStyle.Destructive, handler: { action in
+
+        action.addAction(UIAlertAction(title: "Delete default signature", style: UIAlertActionStyle.destructive, handler: { action in
             self.signatureView.removeSignature()
         }))
-        
-        action.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+
+        action.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
         
         if let popOver = action.popoverPresentationController {
             popOver.barButtonItem = barButton
         }
-        presentViewController(action, animated: true, completion: nil)
+        present(action, animated: true, completion: nil)
     }
 
-    func onTouchClearButton() {
+    @objc func onTouchClearButton() {
         signatureView.clear()
     }
     
