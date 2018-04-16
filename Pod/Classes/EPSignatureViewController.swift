@@ -30,6 +30,7 @@ public class EPSignatureViewController: UIViewController {
     
     public var showsDate: Bool = true
     public var showsSaveSignatureOption: Bool = true
+    public var shouldShowBottomViews: Bool = true
     public var signatureDelegate: EPSignatureDelegate
     public var subtitleText = "Sign Here"
     public var tintColor = UIColor.defaultTintColor()
@@ -68,6 +69,9 @@ public class EPSignatureViewController: UIViewController {
             switchSaveSignature.isHidden = true
         }
         
+        lblX.isHidden = !shouldShowBottomViews
+        viewMargin.isHidden = !shouldShowBottomViews
+        
         lblSignatureSubtitle.text = subtitleText
         switchSaveSignature.setOn(false, animated: true)
     }
@@ -91,10 +95,9 @@ public class EPSignatureViewController: UIViewController {
         self.showsDate = showsDate
         self.showsSaveSignatureOption = showsSaveSignatureOption
         self.signatureDelegate = signatureDelegate
+        self.shouldShowBottomViews = shouldShowBottomViews
         let bundle = Bundle(for: EPSignatureViewController.self)
         super.init(nibName: "EPSignatureViewController", bundle: bundle)
-        lblX.isHidden = !shouldShowBottomViews
-        viewMargin.isHidden = !shouldShowBottomViews
     }
 
     required public init?(coder aDecoder: NSCoder) {
